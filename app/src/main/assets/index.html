@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>HtmlWrapper</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+        }
+        .container {
+            text-align: center;
+            padding: 40px 20px;
+            max-width: 600px;
+        }
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #00d2ff, #3a7bd5);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .subtitle {
+            color: #aaa;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+        .card {
+            background: rgba(255,255,255,0.08);
+            border-radius: 16px;
+            padding: 24px;
+            margin: 16px 0;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .btn {
+            display: inline-block;
+            padding: 12px 32px;
+            border-radius: 8px;
+            border: none;
+            font-size: 1em;
+            cursor: pointer;
+            margin: 8px;
+            transition: all 0.3s;
+        }
+        .btn-primary {
+            background: linear-gradient(90deg, #00d2ff, #3a7bd5);
+            color: #fff;
+        }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,210,255,0.3); }
+        .btn-secondary {
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .info { color: #888; font-size: 0.9em; margin-top: 20px; }
+        #output {
+            background: rgba(0,0,0,0.3);
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 16px;
+            text-align: left;
+            font-family: monospace;
+            font-size: 0.85em;
+            max-height: 200px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 HtmlWrapper</h1>
+        <p class="subtitle">HTML → APK 封装框架</p>
+        
+        <div class="card">
+            <h3>📱 应用信息</h3>
+            <p class="info" id="version">加载中...</p>
+        </div>
+
+        <div class="card">
+            <h3>🧪 功能测试</h3>
+            <button class="btn btn-primary" onclick="testToast()">Toast 测试</button>
+            <button class="btn btn-secondary" onclick="testFileWrite()">文件写入</button>
+            <button class="btn btn-secondary" onclick="testFileRead()">文件读取</button>
+            <div id="output"></div>
+        </div>
+
+        <p class="info">
+            💡 用 MT Manager 反编译 APK，修改 assets/index.html 即可自定义界面<br>
+            JS 调用 Android 原生功能：Android.toast() / Android.writeFile() / Android.readFile()
+        </p>
+    </div>
+
+    <script>
+        // 显示版本号
+        try {
+            document.getElementById('version').textContent = '版本: ' + Android.getVersion();
+        } catch(e) {
+            document.getElementById('version').textContent = '版本: 1.0 (WebView模式)';
+        }
+
+        function log(msg) {
+            document.getElementById('output').textContent += msg + '\n';
+        }
+
+        function testToast() {
+            try {
+                Android.toast('Hello from HTML! 🎉');
+                log('✅ Toast 调用成功');
+            } catch(e) {
+                log('❌ Toast 失败: ' + e.message);
+            }
+        }
+
+        function testFileWrite() {
+            try {
+                var success = Android.writeFile('data/test.txt', 'Hello HtmlWrapper! ' + new Date().toISOString());
+                log(success ? '✅ 文件写入成功: /data/test.txt' : '❌ 文件写入失败');
+            } catch(e) {
+                log('❌ 写入失败: ' + e.message);
+            }
+        }
+
+        function testFileRead() {
+            try {
+                var content = Android.readFile('data/test.txt');
+                log('📄 文件内容: ' + (content || '(空)'));
+            } catch(e) {
+                log('❌ 读取失败: ' + e.message);
+            }
+        }
+    </script>
+</body>
+</html>
