@@ -2,7 +2,7 @@
 <html lang="zh">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=0.8,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="theme-color" content="#131f24">
 <title>代码多邻国</title>
 <style>
@@ -1725,7 +1725,7 @@ function openReview(id){
   /* 调试口子总开关。
      发出去之前把这里改成 false —— 一改，下面三个长按入口
      一个都不会挂上，不会留下「长按宝石就把数据清空」这种暗门。 */
-  var DEBUG = true;
+  var DEBUG = false;
   if (!DEBUG) return;
 
   hold(document.querySelector('#p-map .st.g'), function(){
