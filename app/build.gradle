@@ -1,16 +1,16 @@
 apply plugin: 'com.android.application'
 
 android {
-    namespace 'com.htmlwrapper'
+    namespace 'com.duo.learn'
     compileSdk 34
     buildToolsVersion "34.0.0"
 
     defaultConfig {
-        applicationId "com.htmlwrapper"
+        applicationId "com.duo.learn"
         minSdk 21
         targetSdk 34
         versionCode 1
-        versionName "1.0"
+        versionName "0.1-debug"
     }
 
     buildTypes {

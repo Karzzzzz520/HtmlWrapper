@@ -1,144 +1,1759 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HtmlWrapper</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            color: #fff;
-        }
-        .container {
-            text-align: center;
-            padding: 40px 20px;
-            max-width: 600px;
-        }
-        h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-            background: linear-gradient(90deg, #00d2ff, #3a7bd5);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .subtitle {
-            color: #aaa;
-            margin-bottom: 30px;
-            font-size: 1.1em;
-        }
-        .card {
-            background: rgba(255,255,255,0.08);
-            border-radius: 16px;
-            padding: 24px;
-            margin: 16px 0;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-        .btn {
-            display: inline-block;
-            padding: 12px 32px;
-            border-radius: 8px;
-            border: none;
-            font-size: 1em;
-            cursor: pointer;
-            margin: 8px;
-            transition: all 0.3s;
-        }
-        .btn-primary {
-            background: linear-gradient(90deg, #00d2ff, #3a7bd5);
-            color: #fff;
-        }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,210,255,0.3); }
-        .btn-secondary {
-            background: rgba(255,255,255,0.1);
-            color: #fff;
-            border: 1px solid rgba(255,255,255,0.2);
-        }
-        .info { color: #888; font-size: 0.9em; margin-top: 20px; }
-        #output {
-            background: rgba(0,0,0,0.3);
-            border-radius: 8px;
-            padding: 16px;
-            margin-top: 16px;
-            text-align: left;
-            font-family: monospace;
-            font-size: 0.85em;
-            max-height: 200px;
-            overflow-y: auto;
-            white-space: pre-wrap;
-            word-break: break-all;
-        }
-    </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#131f24">
+<title>代码多邻国</title>
+<style>
+:root{
+  --bg:#131f24;
+  --surface:#1f2a30;
+  --surface2:#0d1519;
+  --line:#37464f;
+  --ink:#f1f7fb;
+  --ink2:#8a9ba8;
+  --ink3:#5c6f7a;
+  --face:#ce82ff;
+  --face-d:#a568cc;
+  --no:#ff4b4b;
+  --gold:#ffc800;
+  --s1:8px; --s2:16px; --s3:24px;
+  --r1:12px; --r2:16px; --r3:22px;
+  --tabh:68px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0;height:100%}
+body{
+  background:var(--bg);color:var(--ink);
+  font-family:'Duo','Nunito',system-ui,-apple-system,'PingFang SC',sans-serif;
+  font-weight:700;font-size:17px;letter-spacing:.1px;
+  overflow:hidden;
+  -webkit-font-smoothing:antialiased;
+  -webkit-user-select:none;user-select:none;
+}
+
+/* ===== 页面容器：一次只显示一个 ===== */
+.page{position:absolute;inset:0;bottom:var(--tabh);display:none;flex-direction:column}
+.page.on{display:flex}
+
+/* ===== 顶栏（各页共用） ===== */
+.hud{
+  flex:none;height:58px;display:flex;align-items:center;gap:var(--s2);
+  padding:0 var(--s2);
+}
+.st{display:flex;align-items:center;gap:6px;font-size:18px;font-weight:900}
+.st svg{width:23px;height:23px;display:block}
+.st .ico{width:23px;height:23px}
+.st.f{color:#ff9600}
+.st.g{color:#1cb0f6}
+.st.h{color:#ff4b4b}
+
+/* ===== 课程标志：这门课学的是什么 =====
+   之前整个 App 没有一处写过「JavaScript」——
+   单元叫「变量」「常量」，那是知识点，不是语言。
+   而 let x = 1 这行字 JS、TS、Kotlin 都有，换门语言前面的题全得重写。
+   图标直接并进 HUD 那一行，不另占一条。
+   JavaScript 的官方标志是黄底 + 右下角的 JS。 */
+/* 标志和语言名绑成一块 ——
+   单看「JS」两个字，一个没接触过的人未必知道那是 JavaScript。 */
+.cs{display:flex;align-items:center;gap:9px;flex:0 1 auto;min-width:0;
+  background:none;border:none;font-family:inherit;padding:0;margin:0;
+  text-align:left;color:inherit;cursor:pointer;
+  -webkit-tap-highlight-color:transparent}
+.cs:active{transform:scale(.96)}
+.cs-logo{
+  position:relative;width:34px;height:34px;border-radius:7px;flex:none;
+  background:linear-gradient(160deg,var(--cc1,#ffe866),var(--cc2,#f2d417));
+  box-shadow:0 2px 0 var(--cc3,#b39d10);
+  cursor:pointer;
+}
+.cs-logo i{
+  position:absolute;right:2px;bottom:1px;
+  font-family:Arial,Helvetica,sans-serif;
+  font-style:normal;
+  font-size:16px;font-weight:700;letter-spacing:-1.9px;
+  color:var(--cc4,#161616);line-height:1;
+}
+/* 窄屏放不下时，让它自己截断，而不是把右边的数字顶出屏幕 */
+.cs b{
+  font-size:14.5px;font-weight:900;color:var(--ink);
+  min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+/* 三格数据自己成一组靠右。
+   不逐格加 margin-left:auto 是有原因的 ——
+   关掉连胜之后那一格是 display:none，
+   顶着 auto 的元素一消失，整组会塌到左边去。
+   flex:none —— 宁可让语言名截断，也不把数字挤掉。 */
+.hud-stats{display:flex;align-items:center;gap:14px;margin-left:auto;flex:none}
+
+/* ===== 底部 tab 栏 ===== */
+.tabbar{
+  position:absolute;left:0;right:0;bottom:0;height:var(--tabh);
+  display:flex;
+  /* 之前是「纯黑底 + 2px 灰硬边」——
+     青底、灰线、黑条，三道硬边挤在一起，那条线像刀一样横切。
+     现在不留边：从页面底色渐到黑，边界自己化掉。 */
+  background:linear-gradient(to bottom, var(--bg) 0%, var(--surface2) 46%);
+  padding-bottom:env(safe-area-inset-bottom,0);
+}
+.tabbar button{
+  flex:1;border:0;background:none;color:var(--ink3);
+  font-family:inherit;font-size:12px;font-weight:800;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+  padding:0;cursor:pointer;position:relative;
+}
+.tabbar svg{width:26px;height:26px;display:block;fill:currentColor}
+.tabbar .ico{width:26px;height:26px}
+.tabbar button.on{color:var(--face)}
+/* 按下反馈用 JS 手动加 .press —— :active 在移动端要等 ~100ms 判定 */
+.tabbar button.press{transform:scale(.88)}
+/* 有任务能领的时候，在「我的」上点个红点。
+   不点的话，没人会想起来翻那一页 */
+.tabbar button.dot::after{
+  content:'';position:absolute;top:9px;left:calc(50% + 9px);
+  width:9px;height:9px;border-radius:50%;
+  background:#ff4b4b;border:2px solid var(--bg);
+}
+
+/* ---- 每日任务 ---- */
+.qrow{
+  display:flex;align-items:center;gap:12px;
+  background:var(--surface2);border-radius:var(--r1);
+  padding:12px 13px;margin-bottom:8px;
+  transition:background .25s ease-out;
+}
+.qrow.full{background:#2f2742}
+.q-ico{
+  width:38px;height:38px;border-radius:11px;flex:none;
+  display:flex;align-items:center;justify-content:center;
+  background:#2b2438;
+}
+.q-ico .ico{width:21px;height:21px;color:var(--face)}
+.q-mid{flex:1;min-width:0}
+.q-mid b{display:block;font-size:14.5px;font-weight:800;
+  color:var(--ink);margin-bottom:6px}
+.q-bar{height:8px;border-radius:4px;background:#1c1828;overflow:hidden}
+.q-bar i{display:block;height:100%;width:0;border-radius:4px;
+  background:linear-gradient(90deg,#22e0d6,#1cb0f6);
+  transition:width .4s ease-out}
+.qrow.full .q-bar i{background:var(--face)}
+.q-num{font-size:12.5px;font-weight:900;color:var(--ink3);
+  flex:none;min-width:54px;text-align:right}
+.q-ok{font-size:12.5px;font-weight:900;color:#3fbf7f;flex:none}
+.q-get{
+  flex:none;border:0;border-radius:11px;padding:9px 14px;
+  background:var(--face);color:#fff;font-family:inherit;
+  font-size:13.5px;font-weight:900;
+  box-shadow:0 3px 0 var(--face-d);cursor:pointer;
+  transition:transform .16s ease-out, box-shadow .16s ease-out;
+}
+.q-get.press,
+.q-get:active{
+  transition:none;
+  transform:translateY(3px) scale(.97);
+  box-shadow:0 1px 0 var(--face-d);
+}
+.q-bonus{
+  display:flex;align-items:center;gap:10px;
+  margin-top:12px;padding:11px 14px;border-radius:var(--r1);
+  background:#241f30;border:1px dashed var(--line);
+  font-size:13.5px;font-weight:800;color:var(--ink2);
+}
+.q-bonus.done{border-style:solid;border-color:#2f6b4e;color:#3fbf7f}
+.q-cnt{float:right;font-size:12px;font-weight:800;color:var(--ink3)}
+
+/* ===== 地图 ===== */
+.map-scroll{
+  flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;position:relative;
+  /* 上下两头都淡出去，不是硬切一刀 —— 内容是「化」进背景里的。
+     上面留 44px、下面留 54px，专门给淡出用：
+     不预留的话，第一关刚进来就是糊的、最后一关滚到底也是糊的。
+     （画布 .canvas 是 position:relative，所以 padding 推得动它） */
+  padding-top:44px;
+  padding-bottom:54px;
+  -webkit-mask-image:linear-gradient(to bottom,
+    transparent 0, #000 44px, #000 calc(100% - 54px), transparent 100%);
+  mask-image:linear-gradient(to bottom,
+    transparent 0, #000 44px, #000 calc(100% - 54px), transparent 100%);
+}
+.canvas{position:relative;width:100%}
+.wires{position:absolute;top:0;left:0;width:100%;pointer-events:none}
+/* ===== 章节条：钉在顶栏下面，不跟地图滚 =====
+   原来这块「第 N 章」是画在地图画布里的 —— 它会跟着地图一起滚走。
+   但多邻国那块牌子钉在顶栏上：地图再长，你永远知道自己站在第几章。
+   点它展开阶段列表（#secs）。
+   颜色按章节走，从 course.js 里取（--sc1 亮 / --sc2 暗 / --sc3 厚边）。 */
+.secbar{
+  flex:none;width:calc(100% - var(--s2) * 2);
+  box-sizing:border-box;margin:0 var(--s2) 10px;
+  padding:9px 16px;border:none;font-family:inherit;text-align:left;
+  border-radius:var(--r2);
+  background:linear-gradient(135deg,var(--sc1),var(--sc2));
+  box-shadow:0 4px 0 var(--sc3);
+  display:flex;align-items:center;gap:12px;
+  color:#fff;cursor:pointer;
+}
+.secbar i{display:block;font-style:normal;font-size:12px;font-weight:800;
+  color:rgba(255,255,255,.78);letter-spacing:.5px}
+.secbar b{display:block;font-size:19px;font-weight:900;margin-top:3px}
+.secbar .cb-ico{
+  margin-left:auto;flex:none;width:30px;height:30px;border-radius:9px;
+  background:rgba(255,255,255,.22);
+  display:flex;align-items:center;justify-content:center;
+}
+.secbar .cb-ico i{
+  display:block;width:16px;height:3px;border-radius:2px;background:#fff;
+  box-shadow:0 6px 0 #fff, 0 -6px 0 #fff;
+}
+.secbar:active{transform:translateY(3px);box-shadow:0 1px 0 var(--sc3)}
+
+/* ===== 单元名：两边拉横线，中间一行小字 =====
+   多邻国那张地图里，「——在市场购物——」才是小章。
+   我之前把单元名做成居中胶囊、又把章节做成大牌子，
+   两层看起来一样重，反过来把该重的那个压下去了。 */
+.unit{
+  position:absolute;left:var(--s2);right:var(--s2);height:24px;
+  display:flex;align-items:center;gap:12px;
+  font-size:13px;font-weight:900;letter-spacing:1.6px;
+  color:var(--face);pointer-events:none;
+}
+.unit::before,.unit::after{
+  content:'';flex:1;height:2px;border-radius:2px;
+  background:currentColor;opacity:.3;
+}
+.unit i{font-style:normal;white-space:nowrap}
+
+/* ===== 阶段列表（点章节条打开）===== */
+.secs{position:fixed;inset:0;z-index:70;background:var(--bg);
+  display:none;flex-direction:column}
+.secs.on{display:flex}
+.secs-top{display:flex;align-items:center;gap:14px;
+  padding:20px var(--s3) 10px;flex:none}
+.secs-top .x{background:none;border:none;color:var(--ink2);font-size:24px;
+  font-family:inherit;padding:0 4px;line-height:1;cursor:pointer}
+.secs-top b{font-size:19px;font-weight:900;color:var(--ink)}
+.secs-body{flex:1;overflow-y:auto;padding:0 var(--s3) 40px}
+.seccard{
+  background:var(--surface);border-radius:var(--r2);
+  padding:16px;margin-bottom:12px;cursor:pointer;
+  border:2px solid transparent;
+}
+.seccard.here{border-color:var(--sc1)}
+.seccard h3{margin:0;font-size:18px;font-weight:900;color:var(--face);
+  display:flex;align-items:baseline;gap:10px}
+.seccard h3 .sc-tag{
+  flex:none;font-size:12px;font-weight:800;letter-spacing:.5px;
+  color:#fff;background:var(--sc1);
+  padding:3px 9px;border-radius:999px;
+}
+.seccard .sc-desc{margin-top:6px;font-size:13px;font-weight:600;color:var(--ink3)}
+.seccard .sc-go{
+  margin-top:14px;display:flex;align-items:center;gap:8px;
+  font-size:13px;font-weight:800;color:#1cb0f6;
+}
+.seccard .sc-dot{flex:none;width:14px;height:14px;border-radius:4px;background:var(--sc1)}
+
+/* ===== 快速复习弹窗（点已通过的关）===== */
+.rev{position:fixed;inset:0;z-index:80;display:none;align-items:flex-end;
+  background:rgba(0,0,0,.45)}
+.rev.on{display:flex}
+.rev-in{
+  width:100%;box-sizing:border-box;
+  /* 绿压暗了一档：原来是 #7ede2c → #4fbb10，白字压在上面只有 1.70 和 2.49，
+     连大号粗体要求的 3:1 都没到。
+     新的一档是 3.36 → 5.18，看起来还是同一个绿，但那两行字立住了。 */
+  background:linear-gradient(180deg,#3fa00b,#2f7d05);
+  border-radius:24px 24px 0 0;
+  padding:26px var(--s3) 30px;
+  animation:revUp .22s ease-out;
+}
+@keyframes revUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.rev-in h3{margin:0;font-size:27px;font-weight:900;color:#fff;letter-spacing:.5px}
+.rev-in p{margin:10px 0 0;font-size:15px;font-weight:700;color:rgba(255,255,255,.88)}
+.rev-go{
+  margin-top:22px;width:100%;border:none;font-family:inherit;
+  background:#fff;color:#3d9410;
+  font-size:19px;font-weight:900;padding:17px;cursor:pointer;
+  border-radius:var(--r2);
+  box-shadow:0 4px 0 rgba(0,0,0,.16);
+}
+.rev-go:active{transform:translateY(3px);box-shadow:0 1px 0 rgba(0,0,0,.16)}
+.rev-go b{font-weight:900}
+
+/* 进阶练那一版：金。和地图上那颗金圈同一套语言。
+   注意字色跟着翻成深褐 —— 金底上压白字对比度只有 1.3，等于看不见。 */
+.rev.gold .rev-in{
+  background:linear-gradient(180deg,#ffd93b,#f0b400);
+}
+.rev.gold .rev-in h3{color:#3f2a00}
+.rev.gold .rev-in p{color:rgba(63,42,0,.72)}
+.rev.gold .rev-go{color:#a06a00}
+
+
+/* ===== 换课页 ===== */
+.ccard{margin-bottom:10px;cursor:pointer;border:2px solid transparent}
+.ccard.on{border-color:var(--face)}
+.cc-top{display:flex;align-items:center;gap:10px}
+.cc-badge{
+  width:34px;height:34px;border-radius:8px;flex:none;
+  display:flex;align-items:center;justify-content:center;
+  font-family:Arial,Helvetica,sans-serif;font-size:15px;font-weight:800;
+  color:#111;letter-spacing:-1px;
+}
+.cc-top b{font-size:17px;font-weight:900;color:var(--face)}
+.cc-now{margin-left:auto;font-size:12px;font-weight:800;color:#1cb0f6}
+.cc-soon{margin-left:auto;font-size:12px;font-weight:800;color:var(--ink3)}
+.cc-sub{margin-top:6px;font-size:13px;font-weight:600;color:var(--ink3)}
+.cc-meta{margin-top:8px;font-size:12px;font-weight:800;color:var(--ink2)}
+
+
+.nd{
+  position:absolute;width:76px;height:76px;margin:-38px 0 0 -38px;
+  border:0;border-radius:50%;padding:0;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:transform .1s, box-shadow .1s;
+}
+.nd svg{width:34px;height:34px;display:block}
+/* 已通过的关：金色。
+   上一轮我刷成了绿色 —— 那是错的。
+   整个 App 一条规矩：金 = 已完成，绿 = 正在进行。
+   图标是双向箭头，因为它现在是个「回头再练」的入口，
+   不是「看我通过没有」的收据。 */
+.nd.done{background:#ffc800;box-shadow:0 6px 0 #e0a800}
+/* 进阶练也拿下了：还是金色，外加一圈静环 ——
+   一眼看得出「这一关吃透了」，不用靠颜色深浅去猜 */
+.nd.adv{background:#ffc800;box-shadow:0 6px 0 #e0a800}
+.nd.adv::after{
+  content:'';position:absolute;inset:-8px;border-radius:50%;
+  border:3px solid #ffc800;opacity:.5;
+}
+.nd.current{
+  background:var(--face);box-shadow:0 7px 0 var(--face-d);
+  animation:ndPulse 1.6s ease-in-out infinite;
+}
+.nd.current::after{
+  content:'';position:absolute;inset:-9px;border-radius:50%;
+  border:3px solid var(--face);
+  animation:ndRing 1.6s ease-out infinite;
+}
+.nd.locked{background:var(--line);box-shadow:0 6px 0 #26333b}
+.nd:active{transform:translateY(4px)}
+@keyframes ndPulse{
+  0%,100%{transform:translateY(0) scale(1)}
+  50%{transform:translateY(-4px) scale(1.045)}
+}
+@keyframes ndRing{
+  0%{transform:scale(.86);opacity:.65}
+  100%{transform:scale(1.28);opacity:0}
+}
+.bubble{
+  position:absolute;white-space:nowrap;
+  padding:9px 16px;border-radius:12px;
+  background:#fff;color:#3c3c3c;
+  font-size:14px;font-weight:900;
+  box-shadow:0 3px 0 rgba(0,0,0,.25);
+  pointer-events:none;
+  animation:bob 1.6s ease-in-out infinite;
+}
+@keyframes bob{
+  0%,100%{transform:translate(-50%,0)}
+  50%{transform:translate(-50%,-5px)}
+}
+
+/* 还没通关时，地图上出来说话的 Duo。
+   .bubble 是纯文字提示，这个是「一张脸 + 一句话」——
+   新用户打开只看到一排锁，一句人话比一个光秃秃的标记管用。 */
+.duo-hello{
+  position:absolute;z-index:5;
+  transform:translateX(-50%);
+  display:flex;align-items:center;gap:6px;
+  pointer-events:none;
+  animation:duoIn .5s cubic-bezier(.3,1.5,.5,1) .25s backwards;
+}
+.duo-hello img{
+  width:62px;display:block;
+  filter:drop-shadow(0 5px 12px rgba(0,0,0,.5));
+  animation:bobImg 2.6s ease-in-out infinite;
+}
+.duo-hello .say{
+  background:#fff;color:#3c3c3c;
+  font-size:14px;font-weight:900;
+  padding:9px 14px;border-radius:12px;
+  box-shadow:0 3px 0 rgba(0,0,0,.25);
+  white-space:nowrap;
+}
+@keyframes duoIn{
+  from{opacity:0;transform:translateX(-50%) translateY(14px) scale(.9)}
+  to{opacity:1;transform:translateX(-50%) scale(1)}
+}
+@keyframes bobImg{
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-5px)}
+}
+
+/* 点已通关的节点 → 弹出的「重新挑战」按钮。
+   和 .bubble 同一套语言（圆角 + 厚阴影），但有三处不同：
+   ① pointer-events 从 none 改成 auto —— 它是按钮，不是提示
+   ② 底色用主色 —— 提示是白的，动作是紫的，一眼能分
+   ③ transform 必须显式写死 —— .bubble 靠无限循环的动画撑着居中，
+      而这个动画只播一次，播完就会掉回静态值，不写就跳位 */
+.rebub{
+  position:absolute;z-index:6;
+  white-space:nowrap;
+  padding:10px 18px;border-radius:12px;
+  background:var(--face);color:#fff;
+  font-size:14px;font-weight:900;
+  border:none;cursor:pointer;
+  transform:translate(-50%,0);
+  box-shadow:0 3px 0 var(--face-d);
+  animation:pop .18s cubic-bezier(.3,1.5,.5,1);
+}
+.rebub:active{
+  transform:translate(-50%,2px);
+  box-shadow:0 1px 0 var(--face-d);
+}
+@keyframes pop{
+  from{opacity:0;transform:translate(-50%,-6px) scale(.86)}
+  to{opacity:1;transform:translate(-50%,0) scale(1)}
+}
+
+/* ===== 通用内容样式（我的 / 商店） ===== */
+.wrap{
+  flex:1;overflow-y:auto;
+  padding:0 var(--s2) calc(var(--s3) + 26px);
+  /* 和地图页同一套：滚到底淡出，别让最后一张卡被 tab 栏一刀切掉 */
+  -webkit-mask-image:linear-gradient(to bottom,#000 calc(100% - 42px),transparent 100%);
+  mask-image:linear-gradient(to bottom,#000 calc(100% - 42px),transparent 100%);
+}
+.card{
+  background:var(--surface);border-radius:var(--r2);
+  padding:var(--s2);margin-bottom:var(--s2);
+}
+.title{
+  font-size:13px;font-weight:900;letter-spacing:1.4px;
+  color:var(--ink2);margin:6px 0 10px;
+}
+
+/* ---- 我的：头像区 ---- */
+.me-head{display:flex;align-items:center;gap:14px;padding:6px 0 18px}
+.me-av{
+  width:76px;height:76px;border-radius:50%;flex:none;
+  background:var(--surface);border:2px solid var(--line);
+  display:flex;align-items:center;justify-content:center;
+}
+.me-av .ico{width:38px;height:38px;color:var(--face)}
+.me-name{font-size:24px;font-weight:900;margin:0}
+.me-sub{color:var(--ink2);font-size:14px;margin:5px 0 0}
+
+/* ---- 数字三连 ---- */
+.stats{display:flex;gap:10px;margin-bottom:var(--s2)}
+.stat{
+  flex:1;background:var(--surface);border-radius:var(--r2);
+  padding:14px 10px;text-align:center;
+}
+.stat b{display:block;font-size:24px;font-weight:900;line-height:1.2}
+.stat span{display:block;font-size:12px;color:var(--ink2);margin-top:4px;font-weight:800}
+.stat.s-f b{color:#ff9600}
+.stat.s-g b{color:#1cb0f6}
+.stat.s-h b{color:var(--no)}
+.stat.s-x b{color:#ffc800}
+
+/* ===== 买到了 / 买不起：一句话，浮一下就没 ===== */
+.toast{
+  position:fixed;left:50%;bottom:calc(var(--tabh) + 26px);
+  transform:translateX(-50%) translateY(10px);
+  background:#fff;color:#3c3c3c;
+  font-size:14px;font-weight:900;
+  padding:11px 18px;border-radius:14px;
+  box-shadow:0 4px 16px rgba(0,0,0,.4);
+  opacity:0;pointer-events:none;z-index:60;
+  white-space:nowrap;
+  transition:opacity .18s ease-out, transform .26s cubic-bezier(.3,1.5,.5,1);
+}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* 价格按钮里那颗小宝石。原来的 .buy 只管颜色和厚度 */
+.buy{display:inline-flex;align-items:center;gap:6px}
+.buy .ico{width:17px;height:17px;flex:none}
+
+/* ---- 课程进度条 ---- */
+.prog-row{display:flex;align-items:center;gap:12px}
+.prog-out{flex:1;height:16px;border-radius:8px;background:var(--surface2);overflow:hidden}
+.prog-in{
+  height:100%;width:0;border-radius:8px;
+  background:linear-gradient(90deg,#22e0d6,#1cb0f6);
+  transition:width .5s ease-out;
+}
+.prog-num{font-size:15px;font-weight:900;color:var(--ink2);flex:none}
+
+/* ---- 成就墙 ---- */
+.achs{display:grid;grid-template-columns:repeat(3,1fr);gap:16px 10px}
+.ach{display:flex;flex-direction:column;align-items:center;gap:5px}
+.ach-m{
+  position:relative;width:100%;max-width:76px;aspect-ratio:1;
+  border-radius:50%;flex:none;
+  display:flex;align-items:center;justify-content:center;
+  background:#221d30;
+  box-shadow:inset 0 0 0 2px var(--line);
+  transition:box-shadow .25s ease-out, background .25s ease-out;
+}
+/* 解锁的：圈用这颗成就自己的颜色，还带一点辉光。
+   之前只有图标上色、框还是灰的，整排看着像没做完。 */
+.ach.un .ach-m{
+  background:radial-gradient(circle at 50% 30%, #33294c, #221d30);
+  box-shadow:inset 0 0 0 2px var(--c), 0 0 16px -3px var(--c);
+}
+.ach-m .ico{width:46%;height:46%;color:var(--ink3);
+  transition:color .25s ease-out}
+.ach.un .ach-m .ico{color:var(--c)}
+.ach-m b{
+  position:absolute;left:50%;bottom:-3px;transform:translateX(-50%);
+  font-size:12px;font-weight:900;color:var(--ink2);
+  background:var(--bg);border:1px solid var(--line);
+  padding:1px 7px;border-radius:999px;white-space:nowrap;
+}
+.ach.un .ach-m b{color:var(--ink)}
+.ach-n{font-size:11.5px;font-weight:800;color:var(--ink3);
+  text-align:center;line-height:1.25}
+.ach.un .ach-n{color:var(--ink)}
+.ach-p{font-size:11.5px;font-weight:800;color:var(--ink3)}
+.ach.un .ach-p{color:var(--ink2)}
+.ach-cnt{float:right;font-size:12px;font-weight:800;color:var(--ink3)}
+
+/* ---- 商店 ---- */
+.shop-item{
+  display:flex;align-items:center;gap:14px;
+  background:var(--surface);border-radius:var(--r2);
+  padding:14px;margin-bottom:10px;
+}
+.shop-ico{
+  width:52px;height:52px;border-radius:14px;flex:none;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--surface2);
+}
+
+/* ---- 设置页（整页盖上来） ---- */
+.sets{position:fixed;inset:0;z-index:70;background:var(--bg);
+  display:none;flex-direction:column}
+.sets.on{display:flex}
+.sets-top{display:flex;align-items:center;gap:14px;
+  padding:20px var(--s3) 10px;flex:none}
+.sets-top .x{background:none;border:none;color:var(--ink2);font-size:24px;
+  font-family:inherit;padding:0 4px;line-height:1;cursor:pointer}
+.sets-top b{font-size:19px;font-weight:900;color:var(--ink)}
+.sets-body{flex:1;overflow-y:auto;padding:0 var(--s3) 40px}
+
+.setrow{
+  display:flex;align-items:center;gap:14px;
+  background:var(--surface);border-radius:var(--r2);
+  padding:15px;margin-bottom:10px;
+}
+.set-tx{flex:1;min-width:0}
+.set-tx b{display:block;font-size:15.5px;font-weight:800;color:var(--ink)}
+.set-tx span{display:block;font-size:13px;color:var(--ink2);
+  margin-top:3px;line-height:1.45}
+.set-arrow{color:var(--ink3);font-size:20px;font-weight:900;flex:none}
+
+/* 开关 */
+.sw{
+  width:52px;height:31px;border-radius:999px;flex:none;
+  background:var(--line);position:relative;cursor:pointer;
+  transition:background .18s ease-out;
+}
+.sw::after{
+  content:'';position:absolute;top:3px;left:3px;
+  width:25px;height:25px;border-radius:50%;background:#fff;
+  transition:transform .2s cubic-bezier(.3,1.6,.5,1);
+}
+.sw.on{background:var(--face)}
+.sw.on::after{transform:translateX(21px)}
+
+.ver{text-align:center;color:var(--ink3);font-size:12.5px;
+  font-weight:600;margin:24px 0 0}
+
+/* 关掉连胜之后，连胜那几处显示一起收走 —— 留着就是个 0 在旁边碍眼 */
+body.nostreak .st.f,
+body.nostreak .stat.s-f{display:none}
+
+/* ---- 图标：SVG 当遮罩，颜色跟 currentColor 走 ---- */
+.ico{
+  display:block;width:26px;height:26px;background:currentColor;
+  -webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;
+  -webkit-mask-position:center;mask-position:center;
+  -webkit-mask-size:contain;mask-size:contain;
+}
+.ico-fire      {-webkit-mask-image:url(icons/fire.svg);      mask-image:url(icons/fire.svg)}
+.ico-diamond   {-webkit-mask-image:url(icons/diamond.svg);   mask-image:url(icons/diamond.svg)}
+.ico-heart     {-webkit-mask-image:url(icons/heart.svg);     mask-image:url(icons/heart.svg)}
+.ico-lightning {-webkit-mask-image:url(icons/lightning.svg); mask-image:url(icons/lightning.svg)}
+.ico-snowflake {-webkit-mask-image:url(icons/snowflake.svg); mask-image:url(icons/snowflake.svg)}
+.ico-trophy    {-webkit-mask-image:url(icons/trophy.svg);    mask-image:url(icons/trophy.svg)}
+.ico-star      {-webkit-mask-image:url(icons/star.svg);      mask-image:url(icons/star.svg)}
+.ico-crown     {-webkit-mask-image:url(icons/crown.svg);     mask-image:url(icons/crown.svg)}
+.ico-shield    {-webkit-mask-image:url(icons/shield.svg);    mask-image:url(icons/shield.svg)}
+.ico-clock     {-webkit-mask-image:url(icons/clock.svg);     mask-image:url(icons/clock.svg)}
+.ico-compass      {-webkit-mask-image:url(icons/compass.svg);      mask-image:url(icons/compass.svg)}
+.ico-chest     {-webkit-mask-image:url(icons/chest.svg);     mask-image:url(icons/chest.svg)}
+.ico-avatar    {-webkit-mask-image:url(icons/user-avatar.svg); mask-image:url(icons/user-avatar.svg)}
+
+.ico.big{width:30px;height:30px}
+.shop-tx{flex:1;min-width:0}
+.shop-tx b{display:block;font-size:16px;font-weight:900}
+.shop-tx span{display:block;font-size:13px;color:var(--ink2);margin-top:3px}
+.buy{
+  flex:none;border:0;border-radius:12px;padding:11px 16px;
+  background:var(--face);color:#fff;font-family:inherit;
+  font-size:14px;font-weight:900;box-shadow:0 4px 0 var(--face-d);
+  cursor:pointer;touch-action:manipulation;
+  transition:transform .16s ease-out, box-shadow .16s ease-out;
+}
+/* 按下：零过渡，啪地陷进去 —— 这样才跟手 */
+.buy.press,
+.buy:active{
+  transition:none;
+  transform:translateY(4px) scale(.97);
+  box-shadow:0 1px 0 var(--face-d);
+}
+.buy.off{background:var(--line);color:var(--ink3);box-shadow:0 4px 0 #26333b}
+.buy.off.press,
+.buy.off:active{
+  transition:none;
+  transform:translateY(4px) scale(.97);
+  box-shadow:0 1px 0 #26333b;
+}
+/* 买不起的那个也别显得能点 */
+.buy.off .ico{opacity:.5}
+</style>
 </head>
 <body>
-    <div class="container">
-        <h1>🚀 HtmlWrapper</h1>
-        <p class="subtitle">HTML → APK 封装框架</p>
-        
-        <div class="card">
-            <h3>📱 应用信息</h3>
-            <p class="info" id="version">加载中...</p>
-        </div>
 
-        <div class="card">
-            <h3>🧪 功能测试</h3>
-            <button class="btn btn-primary" onclick="testToast()">Toast 测试</button>
-            <button class="btn btn-secondary" onclick="testFileWrite()">文件写入</button>
-            <button class="btn btn-secondary" onclick="testFileRead()">文件读取</button>
-            <div id="output"></div>
-        </div>
+<!-- ============ 学习（地图） ============ -->
+<div class="page on" id="p-map">
+  <div class="hud">
+    <button class="cs" id="csBtn">
+      <span class="cs-logo" id="csLogo"><i id="csBadge">JS</i></span>
+      <b id="csName">JavaScript</b>
+    </button>
 
-        <p class="info">
-            💡 用 MT Manager 反编译 APK，修改 assets/index.html 即可自定义界面<br>
-            JS 调用 Android 原生功能：Android.toast() / Android.writeFile() / Android.readFile()
-        </p>
+    <span class="hud-stats">
+      <span class="st f">
+        <i class="ico ico-fire"></i>
+        <span id="hud-streak">1</span>
+      </span>
+      <span class="st g">
+        <i class="ico ico-diamond"></i>
+        <span id="hud-gem">120</span>
+      </span>
+      <span class="st h">
+        <i class="ico ico-heart"></i>
+        <span id="hud-heart">5</span>
+      </span>
+    </span>
+  </div>
+
+  <!-- 章节条：钉在顶栏下面。地图再长，这一条永远在 -->
+  <button class="secbar" id="secbar">
+    <span>
+      <i id="secbar-i">第 1 章</i>
+      <b id="secbar-b">基础语法</b>
+    </span>
+    <span class="cb-ico"><i></i></span>
+  </button>
+
+  <div class="map-scroll" id="map">
+    <div class="canvas" id="canvas">
+      <svg class="wires" id="wires" xmlns="http://www.w3.org/2000/svg"></svg>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 商店 ============ -->
+<div class="page" id="p-shop">
+  <div class="hud">
+    <span class="st g">
+      <i class="ico ico-diamond"></i>
+      <span id="shop-gem">120</span>
+    </span>
+  </div>
+
+  <div class="wrap">
+    <div class="title">道具</div>
+
+    <div class="shop-item">
+      <div class="shop-ico" style="color:#5fd0ff"><i class="ico ico-snowflake"></i></div>
+      <div class="shop-tx">
+        <b>连胜冻结</b>
+        <span id="txFreeze">今天没学，连胜也不会断</span>
+      </div>
+      <button class="buy" id="buyFreeze"><i class="ico ico-diamond"></i><span id="pFreeze">200</span></button>
     </div>
 
-    <script>
-        // 显示版本号
-        try {
-            document.getElementById('version').textContent = '版本: ' + Android.getVersion();
-        } catch(e) {
-            document.getElementById('version').textContent = '版本: 1.0 (WebView模式)';
-        }
+    <div class="shop-item">
+      <div class="shop-ico" style="color:#ffc800"><i class="ico ico-lightning"></i></div>
+      <div class="shop-tx">
+        <b>双倍经验</b>
+        <span id="txBoost">接下来 15 分钟，经验翻倍</span>
+      </div>
+      <button class="buy" id="buyBoost"><i class="ico ico-diamond"></i><span id="pBoost">100</span></button>
+    </div>
 
-        function log(msg) {
-            document.getElementById('output').textContent += msg + '\n';
-        }
+    <div class="shop-item">
+      <div class="shop-ico" style="color:#ff4b4b"><i class="ico ico-heart"></i></div>
+      <div class="shop-tx">
+        <b>补满爱心</b>
+        <span id="txHeart">立刻回满 5 颗心</span>
+      </div>
+      <button class="buy" id="buyHeart"><i class="ico ico-diamond"></i><span id="pHeart">500</span></button>
+    </div>
 
-        function testToast() {
-            try {
-                Android.toast('Hello from HTML! 🎉');
-                log('✅ Toast 调用成功');
-            } catch(e) {
-                log('❌ Toast 失败: ' + e.message);
-            }
-        }
+    <div class="title" style="margin-top:24px">宝石从哪来</div>
+    <div class="card" style="color:var(--ink2);font-size:14px;line-height:1.8;font-weight:500" id="howGem">
+    </div>
+  </div>
+</div>
 
-        function testFileWrite() {
-            try {
-                var success = Android.writeFile('data/test.txt', 'Hello HtmlWrapper! ' + new Date().toISOString());
-                log(success ? '✅ 文件写入成功: /data/test.txt' : '❌ 文件写入失败');
-            } catch(e) {
-                log('❌ 写入失败: ' + e.message);
-            }
-        }
+<div class="toast" id="toast"></div>
 
-        function testFileRead() {
-            try {
-                var content = Android.readFile('data/test.txt');
-                log('📄 文件内容: ' + (content || '(空)'));
-            } catch(e) {
-                log('❌ 读取失败: ' + e.message);
-            }
-        }
-    </script>
+<!-- ============ 我的 ============ -->
+<div class="page" id="p-me">
+  <div class="wrap">
+    <div class="me-head">
+      <div class="me-av">
+        <i class="ico ico-avatar"></i>
+      </div>
+      <div>
+        <h1 class="me-name">Player9527</h1>
+        <p class="me-sub" id="me-since">正在学 JavaScript</p>
+      </div>
+    </div>
+
+    <div class="stats">
+      <div class="stat s-f"><b id="me-streak">1</b><span>天连胜</span></div>
+      <div class="stat s-g"><b id="me-gem">120</b><span>宝石</span></div>
+      <div class="stat s-h"><b id="me-heart">5</b><span>爱心</span></div>
+      <div class="stat s-x"><b id="me-xp">0</b><span>总经验</span></div>
+    </div>
+
+    <div class="card">
+      <div class="title" style="margin-top:0">今日任务<span class="q-cnt" id="qCnt">0 / 3</span></div>
+      <div id="quests"></div>
+    </div>
+
+    <div class="card">
+      <div class="title" style="margin-top:0">课程进度</div>
+      <div class="prog-row">
+        <div class="prog-out"><i class="prog-in" id="me-bar"></i></div>
+        <span class="prog-num" id="me-prog">0 / 11</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="title" style="margin-top:0">成就<span class="ach-cnt" id="achCnt">0 / 0</span></div>
+      <div class="achs" id="achs"></div>
+      <div id="achHint" style="color:var(--ink3);font-size:13px;margin-top:16px;font-weight:600;line-height:1.6"></div>
+    </div>
+
+    <div class="card" id="openSet">
+      <div class="title" style="margin-top:0">设置</div>
+      <div style="display:flex;align-items:center;color:var(--ink2);font-size:14px;font-weight:600">
+        难度、音效、震动，还有清空进度
+        <span class="set-arrow" style="margin-left:auto">›</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="sets" id="sets">
+  <div class="sets-top">
+    <button class="x" id="setBack">←</button>
+    <b>设置</b>
+  </div>
+
+  <div class="sets-body">
+    <div class="title">难度</div>
+
+    <div class="setrow">
+      <div class="set-tx">
+        <b>无限爱心</b>
+        <span>答错不扣心，想练多久练多久</span>
+      </div>
+      <div class="sw" id="swNoheart"></div>
+    </div>
+
+    <div class="setrow">
+      <div class="set-tx">
+        <b>连胜机制</b>
+        <span>关掉之后不再记连胜，也不再显示</span>
+      </div>
+      <div class="sw" id="swStreak"></div>
+    </div>
+
+    <div class="title">手感</div>
+
+    <div class="setrow">
+      <div class="set-tx">
+        <b>音效</b>
+        <span>答对、答错、翻页的声音</span>
+      </div>
+      <div class="sw" id="swSfx"></div>
+    </div>
+
+    <div class="setrow">
+      <div class="set-tx">
+        <b>震动</b>
+        <span>按下去那一下的反馈</span>
+      </div>
+      <div class="sw" id="swVib"></div>
+    </div>
+
+    <div class="title">数据</div>
+
+    <div class="setrow">
+      <div class="set-tx">
+        <b>清空全部数据</b>
+        <span>进度、宝石、心、成就，一样都不留</span>
+      </div>
+      <button class="buy off" id="wipe">清空</button>
+    </div>
+
+    <p class="ver">编程版多邻国 · 原型 v0.3</p>
+  </div>
+</div>
+
+<!-- ============ 阶段列表（点章节条打开） ============ -->
+<div class="secs" id="secs">
+  <div class="secs-top">
+    <button class="x" id="secsBack">←</button>
+    <b id="secsTitle">JavaScript 课程</b>
+  </div>
+  <div class="secs-body" id="secsBody"></div>
+</div>
+
+<!-- ============ 快速复习弹窗（点已通过的关） ============ -->
+<div class="rev" id="rev">
+  <div class="rev-in">
+    <h3 id="revTitle">快速复习</h3>
+    <p id="revSub"></p>
+    <button class="rev-go" id="revGo">继续 <b id="revXp">+40经验</b></button>
+  </div>
+</div>
+
+<!-- ============ 换课页 ============ -->
+<div class="sets" id="coursepg">
+  <div class="sets-top">
+    <button class="x" id="courseBack">←</button>
+    <b>换一门课</b>
+  </div>
+  <div class="sets-body" id="courseList"></div>
+</div>
+
+<!-- ============ 底部 tab ============ -->
+<nav class="tabbar" id="tabbar">
+  <button data-p="map" class="on">
+    <i class="ico ico-compass"></i>
+    学习
+  </button>
+  <button data-p="shop">
+    <i class="ico ico-chest"></i>
+    商店
+  </button>
+  <button data-p="me" id="tabMe">
+    <i class="ico ico-avatar"></i>
+    我的
+  </button>
+</nav>
+
+<script src="font-b64.js"></script>
+<script src="course.js"></script>
+<script src="state.js"></script>
+<script>
+/* ================================================================
+   0. 环境
+   ================================================================ */
+(function(){
+  if (!window.__FONT_B64 || !window.FontFace) return;
+  try {
+    var ff = new FontFace('Duo', 'url(data:font/ttf;base64,' + window.__FONT_B64 + ')');
+    ff.load().then(function(f){ document.fonts.add(f); }).catch(function(){});
+  } catch(e){}
+})();
+
+function vb(p){
+  if (!STATE.opt('vib')) return;
+  if (navigator.vibrate) navigator.vibrate(p);
+}
+function $(id){ return document.getElementById(id); }
+
+/* ================================================================
+   1. 数据层
+   ================================================================ */
+/* 课程结构搬去 course.js 了 ——
+   这里原来写死两个单元，现在从 COURSE 那棵树里现走。
+   地图、进度、?n= 都只看 allLevels() 那一串，别在这层重新拆树。 */
+
+/* 进度：已通关的关卡数。账本在 state.js，这里只是转个手 */
+function getDone(){
+  return STATE.done();
+}
+
+/* ================================================================
+   2. 地图
+   ================================================================ */
+var SVG_CHECK = '<svg viewBox="0 0 24 24"><path fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+var SVG_LOCK  = '<svg viewBox="0 0 24 24"><path fill="#8a9ba8" d="M7 10V8a5 5 0 0 1 10 0v2h1a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h1zm2 0h6V8a3 3 0 0 0-6 0v2z"/></svg>';
+var SVG_STAR  = '<svg viewBox="0 0 24 24"><path fill="#fff" d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.3 5.9 20.6l1.4-6.8L2.2 9.1l6.9-.8z"/></svg>';
+/* 复习：两个反向箭头。多邻国那个「已完成」的圈里挂的就是这个 */
+var SVG_REVIEW = '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.9"'
+  + ' stroke-linecap="round" stroke-linejoin="round">'
+  + '<path d="M7 9.4h10.6"/><path d="M14.6 6.4l3 3-3 3"/>'
+  + '<path d="M17 14.6H6.4"/><path d="M9.4 17.6l-3-3 3-3"/>'
+  + '</svg>';
+
+var GAP_Y = 104, SWING = 0.36;
+
+/* ===== 路线的形状 =====
+   没有公式 —— 一张写死的偏移表。
+
+   形状是「一次扫幅」叠出来的：
+   从一边蹬到另一边，用 smoothstep 收尾（两头速度归零），
+   所以接缝在顶点上、是圆的，不是折痕。
+
+   三条规矩：
+     ① 一次扫幅 5~9 个圈（大弯，不是每课时一拐）
+     ② 每次扫幅的陡度在 0.18~0.44 之间自己挑 ——
+        所以有的扫得快、有的扫得慢，长度自然就长短不一
+     ③ 每个圈横移不超过 0.47 ——
+        这条最要紧：挪得太狠，路就躺平了，
+        两个圈横跨整屏，看起来不是弯的，是一道折痕。
+
+   60 个数，够铺满最长的一门课（54 关）；超出去就从头绕。
+   同一关永远落在同一处 —— 不随机，否则每刷新一次地图就跳一下。 */
+var PATH_X = [
+    0.35,  0.09, -0.25, -0.59, -0.84, -0.95, -0.82, -0.51, -0.11,  0.29,
+    0.60,  0.72,  0.67,  0.54,  0.35,  0.12, -0.12, -0.35, -0.55, -0.68,
+   -0.73, -0.56, -0.17,  0.30,  0.69,  0.85,  0.80,  0.64,  0.42,  0.16,
+   -0.11, -0.37, -0.60, -0.75, -0.80, -0.73, -0.53, -0.25,  0.07,  0.39,
+    0.68,  0.87,  0.95,  0.82,  0.49,  0.07, -0.36, -0.69, -0.82, -0.76,
+   -0.61, -0.40, -0.15,  0.12,  0.38,  0.59,  0.74,  0.79,  0.67,  0.37
+];
+
+function nodeX(n, W){
+  return W / 2 + PATH_X[n % PATH_X.length] * (W * SWING);
+}
+
+/* 圈与圈的纵向距离也不恒定。
+   等距排列本身就是「这是机器排的」第一个信号；
+   但也不能差太多 —— 差多了会让人以为地图断了。
+   87～121 之间（圈直径 76，所以最紧的时候也只差 11px 就贴上）。 */
+function nodeGap(n){
+  return GAP_Y
+       + Math.sin(n * 0.53)       * 10
+       + Math.sin(n * 1.19 + 2.1) * 7;
+}
+
+/* 每个章节/单元在画布上的纵向位置。drawMap 填，章节条和阶段列表读。 */
+var SEC_POS = [];
+
+function drawMap(){
+  var canvas = $('canvas');
+  var wires  = $('wires');
+  var W = document.documentElement.clientWidth;
+  if (!W) return;
+
+  /* 清空重画（切回地图时必须重画，否则宽度是 0）
+     .rebub 也要一起清 —— 否则点在气泡开着的时候切 tab，
+     节点重画了、气泡却留在原地，位置全错 */
+  canvas.querySelectorAll('.nd,.unit,.bubble,.rebub,.duo-hello').forEach(function(el){ el.remove(); });
+
+  var DONE = getDone();
+  var pts = [], html = '', n = 0, idx = 0, curIdx = -1;
+
+  /* 每个章节、每个单元在画布上的纵向位置。
+     章节条（#secbar）要知道你在第几章，阶段列表（#secs）要知道往哪跳 ——
+     两边都靠这份记录，不再各自算一遍。 */
+  SEC_POS = [];
+
+  var y = 10;
+
+  COURSE.sections.forEach(function(sec, si){
+    if (si > 0) y += 26;                    /* 章节之间留一道空 */
+
+    var rec = {
+      top: y, end: y,
+      c1: sec.c1 || '#b46cf0', c2: sec.c2 || '#8b46d4', c3: sec.c3 || '#65319e',
+      name: sec.name, desc: sec.desc || '', units: []
+    };
+    SEC_POS.push(rec);
+
+    sec.units.forEach(function(unit, ui){
+      if (ui > 0) y += 14;                  /* 同一章节里，单元之间留一点 */
+
+      rec.units.push({ name: unit.name, top: y });
+      html += '<div class="unit" style="top:' + y + 'px"><i>' + unit.name + '</i></div>';
+      y += 78;                              /* 单元名到第一个圈。原来就是 78 ——
+                                             .nd 半径 38，留出 21px 的空 */
+
+      unit.levels.forEach(function(lv){
+        var x = nodeX(n, W);
+
+        /* 四态：锁 / 正在学 / 已通过 / 已进阶。
+       头两种只认进度（duo.done），后两种还要看进阶练的记录（duo.adv）——
+       所以「过了但没练透」和「练透了」是两颗不同的样子，
+       不是同一颗换颜色。 */
+        var state = idx < DONE ? (STATE.isAdv(idx) ? 'adv' : 'done')
+                               : idx === DONE ? 'current' : 'locked';
+        if (state === 'current') curIdx = pts.length;
+
+        var icon = state === 'adv'   ? SVG_CHECK
+                 : state === 'done'  ? SVG_REVIEW
+                 : state === 'locked' ? SVG_LOCK : SVG_STAR;
+
+        html += '<button class="nd ' + state + '" data-state="' + state + '" data-idx="' + idx + '" '
+              + 'style="left:' + x.toFixed(1) + 'px;top:' + y.toFixed(1) + 'px">' + icon + '</button>';
+
+        pts.push({ x:x, y:y });
+        idx++; n++;
+        y += nodeGap(n);
+      });
+    });
+
+    rec.end = y;                            /* 这一章到哪儿结束 */
+  });
+
+  canvas.insertAdjacentHTML('beforeend', html);
+
+  /* 平滑曲线（Catmull-Rom） */
+  function pathTo(last){
+    var d = 'M' + pts[0].x.toFixed(1) + ' ' + pts[0].y.toFixed(1);
+    for (var i = 0; i < last; i++){
+      var p0 = pts[i-1] || pts[i], p1 = pts[i], p2 = pts[i+1], p3 = pts[i+2] || p2;
+      d += ' C' + (p1.x + (p2.x-p0.x)/6).toFixed(1) + ' ' + (p1.y + (p2.y-p0.y)/6).toFixed(1)
+         + ',' + (p2.x - (p3.x-p1.x)/6).toFixed(1) + ' ' + (p2.y - (p3.y-p1.y)/6).toFixed(1)
+         + ',' + p2.x.toFixed(1) + ' ' + p2.y.toFixed(1);
+    }
+    return d;
+  }
+
+  var H = y + 96;
+  canvas.style.height = H + 'px';
+  wires.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+  wires.style.height = H + 'px';
+
+  var base = '<path d="' + pathTo(pts.length - 1) + '" fill="none" stroke="#2a3740" stroke-width="15" stroke-linecap="round"/>';
+  var done = curIdx > 0
+    ? '<path d="' + pathTo(curIdx) + '" fill="none" stroke="#a568cc" stroke-width="15" stroke-linecap="round"/>' : '';
+  wires.innerHTML = base + done;
+
+  if (curIdx >= 0){
+    var cp = pts[curIdx];
+
+    if (DONE === 0){
+      /* 第一次打开：让 Duo 出来说一句。
+         这时候地图上只有一串锁，一个会说话的角色比一个箭头有用。 */
+      var dm = document.createElement('div');
+      dm.className = 'duo-hello';
+      dm.style.left = cp.x.toFixed(1) + 'px';
+      dm.style.top  = (cp.y + 44).toFixed(1) + 'px';
+      /* 这句话里的语言名得跟着课程走 ——
+         换到 Python 还劝人「来学 JavaScript」的话，整块地图就露馅了。
+         骨架课更不能这么劝：那句话说完，下面一个圈都点不动。 */
+      var say = COURSE.ready
+        ? ('来学 ' + COURSE.title + ' 吧。')
+        : (COURSE.title + ' 的课还没做 —— 先换个别的吧。');
+
+      dm.innerHTML = '<img src="super_duo.svg" alt="">'
+                   + '<span class="say">' + say + '</span>';
+      canvas.appendChild(dm);
+    } else {
+      /* 走过一遍了，用户知道该点哪 —— 退回到安静的文字标记 */
+      var bub = document.createElement('div');
+      bub.className = 'bubble';
+      bub.textContent = '从这里开始';
+      bub.style.left = cp.x.toFixed(1) + 'px';
+      bub.style.top  = (cp.y + 54).toFixed(1) + 'px';
+      canvas.appendChild(bub);
+    }
+  }
+
+  [].forEach.call(canvas.querySelectorAll('.nd'), function(btn){
+    btn.onclick = function(){
+      var st = btn.getAttribute('data-state');
+      var id = btn.getAttribute('data-idx');
+
+/* 这一关有没有题。
+         骨架课全拦；JS 只放到第 11 关 ——
+         目录后面还有四章，但点进去没有题，
+         放过去会掉到第 1 关的题上，打着打着还以为自己学完了。 */
+      if (!levelReady(COURSE, +id)){
+        vb([20, 55, 20]);
+        toast(COURSE.ready ? '这一关的题还没写' : (COURSE.title + ' 的课还在做'));
+        return;
+      }
+
+      if (st === 'locked'){ vb([20, 55, 20]); return; }
+      vb(10);
+
+      if (st === 'current'){ location.href = 'lesson.html?n=' + id + '&c=' + COURSE.id; return; }
+
+      /* done：弹「快速复习」。
+         原来是贴着节点冒一个小气泡写「重新挑战」——
+         一把已经过掉的关，问「要不要再打一遍」，量级是不对的。
+         它现在是复习入口，不是重开开关。 */
+      openReview(id);
+    };
+  });
+
+  /* 画完就滚到「当前那一关」。
+     地图是一根长条，你真正要看的是「我站在哪儿」——
+     不滚的话，进度在后面的每次打开都得自己往下翻半天。
+     （canvas.offsetTop 是滚动容器 padding-top 那 44px，
+       不加它，滚的位置会偏上 44px） */
+  if (curIdx >= 0){
+    var map = $('map');
+    var target = $('canvas').offsetTop + pts[curIdx].y - map.clientHeight * 0.52;
+    setTimeout(function(){ map.scrollTop = Math.max(0, target); }, 0);
+  }
+
+  /* 章节条跟着重画一遍 —— 上面那行字报的是「你在第几章、哪个单元」，
+     定位一变它就得跟着变。
+     （第一关时 scrollTop 本来就是 0、不产生滚动事件，
+       所以这里必须显式刷一次，不能只靠 scroll 监听） */
+  paintSecbar();
+}
+
+/* ================================================================
+   3. 「我的」页
+   ================================================================ */
+/* 把账本上的数字刷到页面上所有显示它的地方。
+   一个来源，三个出口 —— 地图 HUD、商店页、我的页。
+   以前这里是「把我的页面的数字抄进 HUD」，
+   而我的页面的数字又是写死在 HTML 里的：
+   数字从哪来，根本说不清。 */
+function drawStats(){
+  var g = STATE.gems(), h = STATE.hearts(), s = STATE.streak();
+
+  $('hud-gem').textContent    = g;
+  $('hud-heart').textContent  = h;
+  $('hud-streak').textContent = s;
+
+  $('me-gem').textContent    = g;
+  $('me-heart').textContent  = h;
+  $('me-streak').textContent = s;
+  $('me-xp').textContent     = STATE.xp();
+
+  $('shop-gem').textContent = g;
+
+  /* 三件道具的状态。买之前得知道自己缺什么、还要等多久 */
+  var b = STATE.boostLeft();
+  $('txBoost').textContent = b > 0
+    ? '还剩 ' + Math.ceil(b / 60000) + ' 分钟'
+    : '接下来 ' + STATE.BOOST_MIN + ' 分钟，经验翻倍';
+
+  $('txFreeze').textContent = STATE.freeze() > 0
+    ? '已存 ' + STATE.freeze() + ' 张 · 最多 ' + STATE.FREEZE_MAX + ' 张'
+    : '今天没学，连胜也不会断';
+
+  if (h >= STATE.HEART_MAX){
+    $('txHeart').textContent = '心是满的';
+  } else {
+    var nx = STATE.nextHeartIn();
+    $('txHeart').textContent = '回满 ' + STATE.HEART_MAX + ' 颗 · 下一颗 '
+                             + Math.ceil(nx / 60000) + ' 分钟';
+  }
+
+  /* 买不起 / 用不上的按钮变灰。
+     不改的话它会一直勾着你点，点了才告诉你不行 */
+  paintBuy('buyFreeze', 'freeze');
+  paintBuy('buyBoost',  'boost');
+  paintBuy('buyHeart',  'heart');
+
+  /* 关掉连胜之后，那几处显示也一起收走 */
+  document.body.classList.toggle('nostreak', !STATE.opt('streak'));
+}
+
+function paintBuy(id, what){
+  var off = STATE.gems() < STATE.PRICE[what];
+  if (what === 'heart'  && STATE.hearts() >= STATE.HEART_MAX) off = true;
+  if (what === 'boost'  && STATE.boostLeft() > 0)            off = true;
+  if (what === 'freeze' && STATE.freeze() >= STATE.FREEZE_MAX) off = true;
+  $(id).classList.toggle('off', off);
+}
+
+/* 成就墙。每一条是一串台阶 ——
+   圈里那个数是「下一级的门槛」，底下一行是「已经跨过几级」 */
+function drawAch(){
+  $('achs').innerHTML = STATE.achList().map(function(a){
+    var num = (a.next === null) ? '满' : a.next;
+    /* 解锁的把颜色挂在 --c 上，圆圈的边框和辉光都跟着它走 */
+    var cs = a.unlocked ? ' style="--c:' + a.color + '"' : '';
+    return '<div class="ach ' + (a.unlocked ? 'un' : '') + '"' + cs + '>'
+         +   '<div class="ach-m">'
+         +     '<i class="ico ico-' + a.ico + '"></i>'
+         +     '<b>' + num + '</b>'
+         +   '</div>'
+         +   '<div class="ach-n">' + a.name + '</div>'
+         +   '<div class="ach-p">' + a.tier + ' / ' + a.total + '</div>'
+         + '</div>';
+  }).join('');
+
+  $('achCnt').textContent  = STATE.achCount() + ' / ' + STATE.achTotal();
+  $('achHint').textContent = '圈里那个数是下一级的门槛'
+    + '（经验健将数经验、答题机器数答对的题、连胜达人数天…）。'
+    + '跨得越深发得越多：第 1 级 ' + STATE.achReward(0)
+    + ' 宝石，第 8 级 ' + STATE.achReward(7) + '。';
+}
+
+/* 每日任务卡。
+   做完的整行亮起来，右边冒出一个能按的「领取」——
+   任务不该自己偷偷结算，得有一下「我拿到了」的感觉。 */
+function drawQuests(){
+  var q = STATE.questList();
+  $('qCnt').textContent = q.doneCount + ' / ' + q.list.length;
+
+  var html = q.list.map(function(x){
+    var pct = Math.round(x.value / x.goal * 100);
+    var right;
+    if (x.done){
+      right = '<span class="q-ok">已领</span>';
+    } else if (x.full){
+      right = '<button class="q-get" data-q="' + x.id + '">领取</button>';
+    } else {
+      right = '<span class="q-num">' + x.value + ' / ' + x.goal + '</span>';
+    }
+    return '<div class="qrow' + (x.full && !x.done ? ' full' : '') + '">'
+         +   '<div class="q-ico"><i class="ico ico-' + x.ico + '"></i></div>'
+         +   '<div class="q-mid"><b>' + x.name + '</b>'
+         +     '<div class="q-bar"><i style="width:' + (x.done ? 100 : pct) + '%"></i></div>'
+         +   '</div>'
+         +   right
+         + '</div>';
+  }).join('');
+
+  /* 三个全清那份额外奖励，是在领第三个的时候一并给的。
+     这里只报状态，不另做一个按钮 —— 两个领奖入口会让人不知道该点哪个 */
+  html += '<div class="q-bonus' + (q.bonusDone ? ' done' : '') + '">'
+        + (q.bonusDone ? '三件全清 · 已领 +' : '三件全清，额外 +')
+        + q.bonus + ' 宝石</div>';
+
+  $('quests').innerHTML = html;
+
+  [].forEach.call($('quests').querySelectorAll('.q-get'), function(b){
+    b.addEventListener('click', function(){
+      vb(14);
+      var r = STATE.claimQuest(b.getAttribute('data-q'));
+      if (r.ok){
+        toast('+' + r.gems + ' 宝石' + (r.bonus ? '（三件全清）' : ''));
+        drawQuests();
+        drawStats();
+      } else {
+        toast(r.msg);
+      }
+    });
+  });
+
+  /* 「我的」那个 tab 上点个红点 */
+  $('tabMe').classList.toggle('dot', q.claimable > 0);
+}
+
+/* 四个开关的当前状态 */
+function drawSets(){
+  $('swNoheart').classList.toggle('on', STATE.opt('noheart'));
+  $('swStreak').classList.toggle('on',  STATE.opt('streak'));
+  $('swSfx').classList.toggle('on',     STATE.opt('sfx'));
+  $('swVib').classList.toggle('on',     STATE.opt('vib'));
+}
+
+function drawMe(){
+  var DONE = getDone();
+  /* 分母用「能学的关数」，不是圈的总数 ——
+     JS 画了 47 个圈，只有 11 关有题；
+     分母写 47 会让人以为还差四十关。 */
+  var total = readyCount(COURSE) || allLevels().length;
+
+  $('me-prog').textContent = DONE + ' / ' + total;
+  $('me-bar').style.width = (total ? (DONE / total * 100) : 0) + '%';
+
+  drawStats();
+  drawAch();
+  drawQuests();
+}
+
+/* ================================================================
+   4. 底栏路由
+   ================================================================ */
+var PAGES = ['map', 'shop', 'me'];
+
+function go(p){
+  PAGES.forEach(function(k){
+    $('p-' + k).classList.toggle('on', k === p);
+  });
+  [].forEach.call($('tabbar').children, function(b){
+    b.classList.toggle('on', b.getAttribute('data-p') === p);
+  });
+  vb(8);
+  if (p === 'map') setTimeout(drawMap, 0);
+  if (p === 'me')  drawMe();
+}
+
+/* 底栏：按下立刻有反馈。不用 :active，它要等 ~100ms 判定 */
+var bar = $('tabbar');
+function pressOn(e){
+  var b = e.target.closest('button');
+  if (b) b.classList.add('press');
+}
+function pressOff(){
+  [].forEach.call(bar.children, function(b){ b.classList.remove('press'); });
+}
+bar.addEventListener('touchstart', pressOn, {passive:true});
+bar.addEventListener('mousedown', pressOn);
+bar.addEventListener('touchend', pressOff);
+bar.addEventListener('touchcancel', pressOff);
+bar.addEventListener('mouseup', pressOff);
+bar.addEventListener('mouseleave', pressOff);
+
+bar.addEventListener('click', function(e){
+  var b = e.target.closest('button');
+  if (b) go(b.getAttribute('data-p'));
+});
+
+/* 商店按钮：按下立刻陷进去，松手弹回（不用 :active，它要等 ~100ms） */
+[].forEach.call(document.querySelectorAll('.buy'), function(b){
+  function on(){ b.classList.add('press'); }
+  function off(){ b.classList.remove('press'); }
+  b.addEventListener('touchstart', on, {passive:true});
+  b.addEventListener('touchend', off);
+  b.addEventListener('touchcancel', off);
+  b.addEventListener('mousedown', on);
+  b.addEventListener('mouseup', off);
+  b.addEventListener('click', function(){
+    off();
+    vb(14);
+  });
+});
+
+/* ================================================================
+   5. 商店
+   ================================================================ */
+/* 价格只有一个来源 —— state.js。UI 不自己写死数字，
+   否则改了价，按钮上那个数还在骗人 */
+(function initShop(){
+  $('pFreeze').textContent = STATE.PRICE.freeze;
+  $('pBoost').textContent  = STATE.PRICE.boost;
+  $('pHeart').textContent  = STATE.PRICE.heart;
+
+  $('howGem').innerHTML =
+      '过关 +' + STATE.GEM_PASS
+    + ' · 全对再 +' + STATE.GEM_PERFECT
+    + ' · 第一次通一关再 +' + STATE.GEM_FIRST
+    + '<br>起步 ' + STATE.GEM_START + ' 颗。';
+
+  /* 点一下买。买不成也没关系 —— state.js 会说为什么不给买 */
+  function wire(btnId, what){
+    var b = $(btnId);
+    if (!b) return;
+    b.addEventListener('touchstart', function(){ b.classList.add('press'); }, {passive:true});
+    b.addEventListener('touchend',  function(){ b.classList.remove('press'); });
+    b.addEventListener('click', function(){
+      vb(10);
+      var r = STATE.buy(what);
+      toast(r.ok ? '买好了' : r.msg);
+      drawStats();
+    });
+  }
+  wire('buyFreeze', 'freeze');
+  wire('buyBoost',  'boost');
+  wire('buyHeart',  'heart');
+})();
+
+/* 一句话，浮一下就没 */
+var _toastT = null;
+function toast(msg){
+  var t = $('toast');
+  t.textContent = msg;
+  t.classList.add('on');
+  clearTimeout(_toastT);
+  _toastT = setTimeout(function(){ t.classList.remove('on'); }, 1700);
+}
+
+/* 这里原来挂的是「点一下，说说这门课到底是什么」的那个 toast。
+   现在整块 .cs 是个按钮了 —— 点开是换课页，课程说明在里面写全了。
+   两个都留着的话，一次点击会同时弹 toast 和开列表。 */
+
+/* ================================================================
+   6. 设置页
+   ================================================================ */
+(function initSets(){
+  $('openSet').onclick = function(){
+    vb(8);
+    drawSets();
+    $('sets').classList.add('on');
+  };
+
+  $('setBack').onclick = function(){
+    vb(8);
+    $('sets').classList.remove('on');
+    /* 回来刷一遍 —— 连胜可能刚被关掉，那边的显示要跟着收走 */
+    drawStats();
+  };
+
+  /* 点一下翻面。改完立刻生效，没有「保存」按钮 */
+  function bindSw(id, key, after){
+    $(id).addEventListener('click', function(){
+      vb(10);
+      STATE.setOpt(key, !STATE.opt(key));
+      drawSets();
+      if (after) after();
+    });
+  }
+  bindSw('swNoheart', 'noheart');
+  bindSw('swStreak',  'streak', drawStats);
+  bindSw('swSfx',     'sfx');
+  bindSw('swVib',     'vib');
+
+  $('wipe').addEventListener('click', function(){
+    vb(30);
+    if (!confirm('清空全部数据？进度、宝石、心、成就都会归零，不能撤销。')) return;
+    STATE.reset();
+    location.reload();
+  });
+})();
+
+/* ================================================================
+   6.4 换课
+   ================================================================ */
+
+/* 每门课的品牌色。课程数据里没存这个 ——
+   它是「长得像那门语言」的东西，和课程结构无关，放这儿比塞进 course.js 清楚。
+   四格：亮 / 暗 / 厚边 / 字色 */
+/* 只有 JavaScript 在这里。它是唯一一门「品牌色和课程色不是一回事」的 ——
+   黄底是 JS 的标志，而它第一章的主题色是紫。
+   其余十几门直接从课程自己第一章那三个色推，不用一门一条地维护 ——
+   十八门课维护十八条配色表，迟早有一条对不上。 */
+var SKIN = {
+  js: ['#ffe866', '#f2d417', '#b39d10', '#161616']
+};
+
+/* 亮度。对比度要它 */
+function lumOf(hex){
+  var h = String(hex).replace('#', '');
+  var c = [0, 2, 4].map(function(i){
+    var v = parseInt(h.substr(i, 2), 16) / 255;
+    return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+  });
+  return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
+}
+function contrastOf(a, b){
+  var x = lumOf(a), y = lumOf(b);
+  var hi = Math.max(x, y), lo = Math.min(x, y);
+  return (hi + 0.05) / (lo + 0.05);
+}
+
+/* 字压在什么颜色上看得见 —— 两个候选各算一遍，挑对比度高的那个。
+   原来是「亮度 > 150 给深字」，可阈值救不了中间调：
+   Python 那个 #5a9cc4 亮度 141，判给白字只有 3.01，换深字有 6.24。
+   谁高用谁，不需要猜阈值。
+
+   深字用纯黑不用 #111：中间调的死角在 L≈0.179 附近，
+   白字和 #111 在两边都够不着 4.5（CSS 那个 #4a6df0 就是 4.43）；
+   换纯黑之后，两边交汇处的下限是 4.58 —— 任意底色都过得去。 */
+function inkOn(hex){
+  return contrastOf('#000000', hex) > contrastOf('#ffffff', hex) ? '#000000' : '#ffffff';
+}
+
+/* 一门课的配色：亮 / 暗 / 厚边 / 字色 */
+function skinOf(c){
+  if (SKIN[c.id]) return SKIN[c.id];
+  var s = (c.sections && c.sections[0]) || {};
+  var a = s.c1 || '#8a8a8a', b = s.c2 || '#666666', d = s.c3 || '#444444';
+  return [a, b, d, inkOn(a)];
+}
+
+/* 把顶栏那个标识换成当前这门课 */
+function drawCourseTag(){
+  var k = skinOf(COURSE);
+  var lg = $('csLogo');
+  lg.style.setProperty('--cc1', k[0]);
+  lg.style.setProperty('--cc2', k[1]);
+  lg.style.setProperty('--cc3', k[2]);
+  lg.style.setProperty('--cc4', k[3]);
+  lg.style.background  = 'linear-gradient(160deg,' + k[0] + ',' + k[1] + ')';
+  lg.style.boxShadow   = '0 2px 0 ' + k[2];
+
+  $('csBadge').textContent = COURSE.badge;
+  $('csBadge').style.color = k[3];
+  $('csName').textContent  = COURSE.title;
+  $('me-since').textContent = '正在学 ' + COURSE.title;
+  $('secsTitle').textContent = COURSE.title + ' 课程';
+}
+
+/* 换课页 */
+function drawCourseList(){
+  $('courseList').innerHTML = COURSE_LIST.map(function(c){
+    /* 显示「能学几关」，不显示「画了几个圈」——
+       JS 有 47 个圈，但只有 11 关有题 */
+    var tot = readyCount(c);
+    if (!tot){
+      c.sections.forEach(function(s){
+        s.units.forEach(function(u){ tot += u.levels.length; });
+      });
+    }
+    var here = c.id === COURSE.id;
+    var done = here ? STATE.done() : STATE.doneOf(c.id);
+
+    return '<div class="card ccard' + (here ? ' on' : '') + '" data-id="' + c.id + '">'
+         +   '<div class="cc-top">'
+         +     '<span class="cc-badge" style="background:' + skinOf(c)[0]
+         +       ';color:' + skinOf(c)[3] + '">' + c.badge + '</span>'
+         +     '<b>' + c.title + '</b>'
+         +     (here ? '<span class="cc-now">正在学</span>'
+                   : (c.ready ? '' : '<span class="cc-soon">还没做</span>'))
+         +   '</div>'
+         +   '<div class="cc-sub">' + c.desc + '</div>'
+         +   '<div class="cc-meta">' + tot + ' 关 · 已通 ' + done + '</div>'
+         + '</div>';
+  }).join('');
+
+  [].forEach.call($('courseList').querySelectorAll('.ccard'), function(el){
+    el.onclick = function(){ switchCourse(el.getAttribute('data-id')); };
+  });
+}
+
+function switchCourse(id){
+  if (id === COURSE.id){ $('coursepg').classList.remove('on'); return; }
+
+  var c = findCourse(id);
+  if (!c) return;
+
+  vb(14);
+  STATE.setCourseId(id);
+  COURSE = c;
+
+  $('coursepg').classList.remove('on');
+  drawCourseTag();
+  drawMap();
+  drawMe();
+  toast(c.ready ? ('换到 ' + c.title) : (c.title + ' · 还在做'));
+}
+
+(function initCourse(){
+  $('csBtn').onclick = function(){
+    vb(10);
+    drawCourseList();
+    $('coursepg').classList.add('on');
+  };
+  $('courseBack').onclick = function(){
+    vb(8);
+    $('coursepg').classList.remove('on');
+  };
+})();
+
+/* 上次停在哪门课，开 App 就接着那门。
+   必须跑在 drawMap 之前 —— 不然地图会先按 JavaScript 画一遍再换，
+   用户会看到闪一下。 */
+COURSE = findCourse(STATE.courseId()) || findCourse(DEFAULT_COURSE) || COURSE_LIST[0];
+drawCourseTag();
+
+
+/* ================================================================
+   6.5 章节条 + 阶段列表
+   ================================================================ */
+
+/* 你眼下在第几章 —— 看滚动条顶端落进哪一段 */
+function nearSec(){
+  if (!SEC_POS.length) return -1;
+  var mid = $('map').scrollTop - $('canvas').offsetTop + 60;
+  var i = 0;
+  for (var k = 0; k < SEC_POS.length; k++) if (SEC_POS[k].top <= mid) i = k;
+  return i;
+}
+
+/* 把章节条那一行字换掉。
+   小字报「第几章 + 眼下这个单元」，大字报章节名 ——
+   多邻国那条是「第 4 阶段，第 1 部分 / 描述家居用品」，
+   位置在上、名字在下，一眼知道自己在哪一格。 */
+function paintSecbar(){
+  var i = nearSec();
+  if (i < 0) return;
+  var s = SEC_POS[i], bar = $('secbar');
+  bar.style.setProperty('--sc1', s.c1);
+  bar.style.setProperty('--sc2', s.c2);
+  bar.style.setProperty('--sc3', s.c3);
+
+  var mid = $('map').scrollTop - $('canvas').offsetTop + 60;
+  var un = s.units[0];
+  for (var k = 0; k < s.units.length; k++) if (s.units[k].top <= mid) un = s.units[k];
+
+  $('secbar-i').textContent = '第 ' + (i + 1) + ' 章 · ' + (un ? un.name : '');
+  $('secbar-b').textContent = s.name;
+}
+
+/* 阶段列表。
+   多邻国那张列表里每张卡是「阶段名 + 进度条 + 跳级到这里」——
+   跳级我们没有（那得有解锁逻辑），但「点一下过去」是实打实有用的：
+   地图长了以后，从第 1 章翻到第 5 章本来就是件苦差事。 */
+function drawSecs(){
+  var DONE = getDone(), idx = 0, here = nearSec();
+
+  $('secsBody').innerHTML = COURSE.sections.map(function(s, si){
+    var total = 0, done = 0;
+    s.units.forEach(function(u){
+      u.levels.forEach(function(lv){
+        total++;
+        if (idx < DONE) done++;
+        idx++;
+      });
+    });
+    var pct = total ? Math.round(done / total * 100) : 0;
+
+    return '<div class="seccard' + (si === here ? ' here' : '') + '" data-si="' + si + '"'
+         +   ' style="--sc1:' + (s.c1 || '#b46cf0') + '">'
+         +   '<h3><span class="sc-tag">第 ' + (si + 1) + ' 章</span>' + s.name + '</h3>'
+         +   '<div class="sc-desc">' + (s.desc || '') + '</div>'
+         +   '<div class="prog-row">'
+         +     '<div class="prog-out"><i class="prog-in" style="width:' + pct + '%"></i></div>'
+         +     '<span class="prog-num">' + done + ' / ' + total + '</span>'
+         +   '</div>'
+         +   '<div class="sc-go"><i class="sc-dot"></i>点这里跳到这一章</div>'
+         + '</div>';
+  }).join('');
+
+  [].forEach.call($('secsBody').querySelectorAll('.seccard'), function(c){
+    c.onclick = function(){
+      vb(8);
+      $('secs').classList.remove('on');
+      /* 平滑滚过去。加回 canvas.offsetTop —— scrollTop 认的是滚动容器，
+         而 SEC_POS 里存的是画布坐标，中间差着那 44px 的 padding */
+      $('map').scrollTo({
+        top: Math.max(0, SEC_POS[+c.getAttribute('data-si')].top + $('canvas').offsetTop - 24),
+        behavior: 'smooth'
+      });
+    };
+  });
+}
+
+/* 快速复习弹窗。
+   一张只有一个「继续」按钮的弹窗，也该让人知道自己在继续什么 ——
+   所以副标题把「第几章 / 哪个单元 / 第几关」写全。 */
+function openReview(id){
+  /* 这个 id 是从 data-idx 读出来的 —— 那是字符串。
+     下面用 n === id 做严格比较，'0' !== 0，一次都对不上，
+     弹窗从来就没打开过。
+     在门口统一成数字，别让每个调用方各转一遍 ——
+     而且 '第 ' + ('0' + 1) + ' 关' 会变成「第 01 关」，转晚了也是错的。 */
+  id = parseInt(id, 10);
+  if (isNaN(id)) return;
+
+  var at = null, n = 0;
+  COURSE.sections.forEach(function(s, si){
+    s.units.forEach(function(u){
+      u.levels.forEach(function(){
+        if (n === id) at = { si: si, unit: u };
+        n++;
+      });
+    });
+  });
+  if (!at) return;
+
+  /* 两级，有先后：
+     ① 过了但没练透 → 只能「进阶练」（全对才算）
+     ② 练透了       → 才是「复习」
+     先给「复习」就是把第二步递到人手里、跳过第一步 ——
+     多邻国那几个金图标也是一颗颗点亮的，不是一次全给。 */
+  var adv = STATE.isAdv(id);
+  var sub = '第 ' + (at.si + 1) + ' 章 · ' + at.unit.name + ' · 第 ' + (id + 1) + ' 关';
+
+  $('rev').classList.toggle('gold', !adv);
+  $('revTitle').textContent = adv ? '快速复习' : '进阶练';
+  $('revSub').textContent   = sub + (adv ? '' : ' · 要全对');
+  $('revXp').textContent    = '+' + (adv ? STATE.REVIEW_XP : STATE.ADV_XP) + '经验';
+  $('revGo').onclick = function(){
+    vb(10);
+    location.href = 'lesson.html?n=' + id + '&c=' + COURSE.id + (adv ? '&r=1' : '&a=1');
+  };
+  $('rev').classList.add('on');
+}
+
+(function initSecs(){
+  $('secbar').onclick = function(){
+    vb(10);
+    drawSecs();
+    $('secs').classList.add('on');
+  };
+
+  $('secsBack').onclick = function(){
+    vb(8);
+    $('secs').classList.remove('on');
+  };
+
+  /* 点弹窗外面（那层半透明黑）就收掉。点弹窗本身不收 ——
+     「继续」那颗按钮在里面，误触关掉会让人白点一次 */
+  $('rev').onclick = function(ev){
+    if (ev.target === this){ vb(6); this.classList.remove('on'); }
+  };
+
+  /* 滚的时候换那行字。passive:true —— 这个监听里没有 preventDefault，
+     声明成被动才不会在滚动时拖住主线程 */
+  $('map').addEventListener('scroll', paintSecbar, { passive: true });
+})();
+
+/* ================================================================
+   7. 启动
+   ================================================================ */
+/* 调试口子（两个都是长按 0.8 秒）
+     地图右上角那颗宝石 → 清空整本账，回到新玩家的状态
+     旁边那颗心         → 直接加 500 宝石，试商店不用真攒 */
+(function(){
+  function hold(el, fn){
+    if (!el) return;
+    var t = null;
+    function start(){ t = setTimeout(fn, 800); }
+    function stop(){ clearTimeout(t); }
+    el.addEventListener('touchstart', start, {passive:true});
+    el.addEventListener('touchend', stop);
+    el.addEventListener('touchmove', stop);
+    el.addEventListener('mousedown', start);
+    el.addEventListener('mouseup', stop);
+  }
+
+  /* 调试口子总开关。
+     发出去之前把这里改成 false —— 一改，下面三个长按入口
+     一个都不会挂上，不会留下「长按宝石就把数据清空」这种暗门。 */
+  var DEBUG = true;
+  if (!DEBUG) return;
+
+  hold(document.querySelector('#p-map .st.g'), function(){
+    STATE.reset();
+    location.reload();
+  });
+
+  hold(document.querySelector('#p-map .st.h'), function(){
+    STATE.addGems(500);
+    drawStats();
+    toast('测试：+500 宝石');
+  });
+
+  /* 进度 +1 —— 不用进答题页就能把地图往前推一格。
+     长按 0.8 秒，和三颗状态数同一套手势。
+     它只动 duo.done，不发奖励、不记进阶 —— 这是为了「走到想看的界面」，
+     不是为了「假装学会了」。 */
+  hold(document.querySelector('#p-map .st.f'), function(){
+    var tot = 0;
+    COURSE.sections.forEach(function(s){
+      s.units.forEach(function(u){ tot += u.levels.length; });
+    });
+    var n = STATE.debugSetDone(Math.min(tot, STATE.done() + 1));
+    drawMap();
+    toast('测试：进度 ' + n + ' / ' + tot);
+  });
+})();
+
+/* 心会自己回血，页面上的数字也得跟着走。
+   20 秒刷一次 —— 比这更勤没意义（回一颗要 5 分钟） */
+setInterval(drawStats, 20000);
+
+drawMap();
+drawMe();
+</script>
 </body>
 </html>

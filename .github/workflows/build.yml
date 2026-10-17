@@ -41,7 +41,7 @@ jobs:
     - name: Upload APK
       uses: actions/upload-artifact@v4
       with:
-        name: HtmlWrapper-debug
+        name: DuoLearn-debug
         path: app/build/outputs/apk/debug/app-debug.apk
 
     - name: Create Release
@@ -49,7 +49,7 @@ jobs:
       uses: softprops/action-gh-release@v1
       with:
         tag_name: v${{ github.run_number }}
-        name: HtmlWrapper v${{ github.run_number }}
+        name: DuoLearn v${{ github.run_number }}
         files: app/build/outputs/apk/debug/app-debug.apk
         draft: false
         prerelease: false
