@@ -1,4 +1,4 @@
-package com.duo.learn;
+package com.duolinco.de;
 
 import android.os.Bundle;
 import android.net.Uri;

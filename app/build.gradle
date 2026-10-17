@@ -1,12 +1,12 @@
 apply plugin: 'com.android.application'
 
 android {
-    namespace 'com.duo.learn'
+    namespace 'com.duolinco.de'
     compileSdk 34
     buildToolsVersion "34.0.0"
 
     defaultConfig {
-        applicationId "com.duo.learn"
+        applicationId "com.duolinco.de"
         minSdk 21
         targetSdk 34
         versionCode 1
