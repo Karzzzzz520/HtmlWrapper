@@ -1,7 +1,12 @@
 <resources>
+    <!-- 状态栏/导航栏跟网页底色对齐：#131f24（index.html 里的 --bg）-->
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="colorPrimary">#302b63</item>
-        <item name="colorPrimaryDark">#0f0c29</item>
-        <item name="colorAccent">#3a7bd5</item>
+        <item name="colorPrimary">#131f24</item>
+        <item name="colorPrimaryDark">#131f24</item>
+        <item name="colorAccent">#ce82ff</item>
+
+        <item name="android:statusBarColor">#131f24</item>
+        <item name="android:navigationBarColor">#131f24</item>
+        <item name="android:windowBackground">#131f24</item>
     </style>
 </resources>
